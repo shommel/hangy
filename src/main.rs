@@ -60,7 +60,7 @@ fn main() {
             .expect("Failed to read line");
 
         // check user input
-        let guess: char = match guess.trim().parse() {
+        let guess: char = match guess.trim().to_lowercase().parse() {
             Ok(char) => char,
             Err(_) => {
                 println!("Error: Enter only letters.");
