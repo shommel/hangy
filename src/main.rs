@@ -1,8 +1,8 @@
 use random_word::gen;
 use std::io;
 
-fn print_intro(){
-    println!("Welcome to Hangy, a hangman game written in rust");
+fn print_intro() {
+    println!("Welcome to Hangy, a Hangman game written in Rust");
     println!("A random word will be chosen... and you need to guess it!");
     println!("To quit at any time, press ~");
 }
@@ -28,30 +28,33 @@ fn main() {
     // choose random word for user to guess
     let target_word = gen();
 
-    // number of wrong guesses user has, 6 and they lose!
     let mut wrong_guesses: u8 = 0;
-
-    // collection of already guessed letters
     let mut gusssed_letters = Vec::new();
 
-    println!("random word is: {}", target_word);
+    let mut user_guessed_word = vec!['*'; target_word.len()];
 
     loop {
         print_hangman(wrong_guesses);
+        println!("{:}", user_guessed_word.iter().collect::<String>());
 
-        // check if user lost
+        // check if user won or lost
         if wrong_guesses >= 6 {
-            println!("You lose, the word was {}", target_word);
+            println!("You lost. The word was {}", target_word);
+            break;
+        }
+
+        else if !user_guessed_word.contains(&'*') {
+            println!("You won!");
             break;
         }
 
         // print sorted collection of user guessed letters
         println!(
             "Guessed letters: {}",
-            gusssed_letters.iter().cloned().collect::<String>()
+            gusssed_letters.iter().collect::<String>()
         );
 
-        println!("Enter your guesss: ");
+        println!("Enter your guess: ");
 
         let mut guess = String::new();
 
@@ -88,6 +91,9 @@ fn main() {
         gusssed_letters.push(guess);
         gusssed_letters.sort();
 
+        // get all occurences of guessed letter in target word
+        let indices_of_guess: Vec<_> = target_word.match_indices(guess).collect();
+
         if !target_word.contains(guess) {
             wrong_guesses+=1;
             println!("Incorrect!");
@@ -95,6 +101,9 @@ fn main() {
 
         else {
             println!("Correct!");
+            for v in indices_of_guess{
+                user_guessed_word[v.0] = guess;
+            }
         }
 
     }
